@@ -115,9 +115,6 @@ let package = Package(
                 .define("ROCKSDB_PLATFORM_POSIX"),
                 .define("PORTABLE"),
                 .define(osEnvRocks)
-            ],
-            linkerSettings: [
-                .linkedLibrary("stdc++")
             ]),
         .target(
             name: "rocksdb",
