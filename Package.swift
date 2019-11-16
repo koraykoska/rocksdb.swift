@@ -5,7 +5,7 @@ import PackageDescription
 
 let osEnvRocks: String
 #if os(Linux)
-osEnvRocks = "OS_GENERIC_LINUX_CUSTOM_ENV"
+osEnvRocks = "OS_LINUX"
 #else
 osEnvRocks = "OS_MACOSX"
 #endif
