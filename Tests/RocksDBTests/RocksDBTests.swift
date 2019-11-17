@@ -3,7 +3,7 @@ import XCTest
 
 final class RocksDBTests: XCTestCase {
 
-    var rocksDB: RocksDB!
+    var rocksDB: RocksDB?
 
     override func setUp() {
         super.setUp()
@@ -15,13 +15,13 @@ final class RocksDBTests: XCTestCase {
     override func tearDown() {
         super.tearDown()
 
-        try! FileManager.default.removeItem(at: rocksDB.path)
+        try! FileManager.default.removeItem(at: rocksDB!.path)
     }
 
     func testSimplePut() {
         let value1 = "thisisatestmessage".data(using: .utf8)!
-        try! rocksDB.put(key: "testKey", value: value1)
-        XCTAssertEqual(try! rocksDB.get(key: "testKey"), value1)
+        try! rocksDB!.put(key: "testKey", value: value1)
+        XCTAssertEqual(try! rocksDB!.get(key: "testKey"), value1)
     }
 
     static var allTests = [
