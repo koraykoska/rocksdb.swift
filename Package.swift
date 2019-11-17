@@ -258,7 +258,10 @@ let package = Package(
                 "upstream/utilities/cassandra/cassandra_compaction_filter.cc",
                 "upstream/utilities/cassandra/cassandra_compaction_filter.h",
                 "upstream/utilities/persistent_cache/hash_table_bench.cc",
-                "upstream/utilities/persistent_cache/persistent_cache_bench.cc"
+                "upstream/utilities/persistent_cache/persistent_cache_bench.cc",
+
+                // stuff we may activate later
+                "upstream/env/env_hdfs.cc"
             ],
             sources: [
                 "upstream/cache",

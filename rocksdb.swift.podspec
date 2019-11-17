@@ -52,6 +52,7 @@ the upstream rocksdb library. Patch version varies.
                    'Sources/librocksdb/upstream/trace_replay/**/*.{cc,c,h}',
                    'Sources/librocksdb/upstream/util/**/*.{cc,c,h}',
                    'Sources/librocksdb/upstream/utilities/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/tools/sst_dump_tool_imp.h',
                    'Sources/librocksdb/patches/build_version.cc',
                    'Sources/librocksdb/public_headers/librocksdb.h'
                    # 'Sources/RocksDB/**/*.swift'
