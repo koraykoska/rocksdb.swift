@@ -25,14 +25,14 @@ the upstream rocksdb library. Patch version varies.
 
   s.pod_target_xcconfig = {
     'SWIFT_INCLUDE_PATHS' => '${PODS_ROOT}',
-    'HEADER_SEARCH_PATHS' => '"${PODS_ROOT}/headers" "${PODS_ROOT}/headers/include" "${PODS_ROOT}/headers/util" "${PODS_ROOT}/Sources/librocksdb/upstream" "${PODS_ROOT}/Sources/librocksdb/upstream/include" "${PODS_ROOT}/Sources/librocksdb/upstream/util"'
+    'HEADER_SEARCH_PATHS' => '"${PODS_ROOT}/RocksDB/librocksdb/upstream" "${PODS_ROOT}/RocksDB/librocksdb/upstream/include" "${PODS_ROOT}/RocksDB/librocksdb/upstream/util"'
   }
 
-  s.header_dir = 'headers'
+  s.header_dir = 'librocksdb/upstream'
 
   s.source_files = 'Sources/librocksdb/upstream/{cache,db,env,file,include,logging,memory,memtable,monitoring,options,port,table,test_util,trace_replay,util,utilities}/**/*.cc',
                    'Sources/librocksdb/upstream/patches/build_version.cc',
-                   #'Sources/RocksDB/**/*.swift'
+                   'Sources/RocksDB/**/*.swift'
   s.public_header_files = 'Sources/librocksdb/upstream/include/rocksdb/c.h'
   s.private_header_files = 'Sources/librocksdb/upstream/{cache,db,env,file,include,logging,memory,memtable,monitoring,options,port,table,test_util,trace_replay,util,utilities}/**/*.h'
   s.exclude_files = 'Sources/librocksdb/upstream/cache/cache_test.cc',
