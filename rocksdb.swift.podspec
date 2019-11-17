@@ -32,7 +32,7 @@ the upstream rocksdb library. Patch version varies.
   #  "${PODS_ROOT}/rocksdb.swift/librocksdb/upstream/include" "${PODS_ROOT}/rocksdb.swift/librocksdb/upstream/util"
 
   s.header_dir = 'rocksdb'
-  # s.header_mappings_dir = 'Sources/librocksdb'
+  s.header_mappings_dir = 'Sources/librocksdb'
 
   s.libraries = 'c++'
 
