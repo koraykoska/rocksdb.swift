@@ -56,8 +56,8 @@ the upstream rocksdb library. Patch version varies.
                    # 'Sources/RocksDB/**/*.swift'
   s.public_header_files = 'Sources/librocksdb/upstream/include/**/*.h'
   # s.private_header_files = 'Sources/librocksdb/upstream/{cache,db,env,file,logging,memory,memtable,monitoring,options,port,table,test_util,trace_replay,util,utilities}/**/*.h'
-  s.exclude_files = 'Sources/librocksdb/upstream/{cache,db,env,file,include,logging,memory,memtable,monitoring,options,port,table,test_util,trace_replay,util,utilities}/**/*_test.{cc,c}',
-                    'Sources/librocksdb/upstream/{cache,db,env,file,include,logging,memory,memtable,monitoring,options,port,table,test_util,trace_replay,util,utilities}/**/*_bench.cc',
+  s.exclude_files = '**/*_test.{cc,c}',
+                    '**/*_bench.cc',
                     'Sources/librocksdb/upstream/db/db_test2.cc',
                     'Sources/librocksdb/upstream/db/db_test_util.cc',
                     'Sources/librocksdb/upstream/port/win',
