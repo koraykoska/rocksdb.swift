@@ -1,7 +1,7 @@
 import XCTest
-@testable import rocksdb
+@testable import RocksDB
 
-final class rocksdbTests: XCTestCase {
+final class RocksDBTests: XCTestCase {
 
     var rocksDB: RocksDB!
 
@@ -18,13 +18,13 @@ final class rocksdbTests: XCTestCase {
         try! FileManager.default.removeItem(at: rocksDB.path)
     }
 
-    func testRocksDB() {
-        let value1 = "thisisatestmessage"
+    func testSimplePut() {
+        let value1 = "thisisatestmessage".data(using: .utf8)!
         try! rocksDB.put(key: "testKey", value: value1)
-        XCTAssertEqual(try! rocksDB.get(key: "testKey"), value1.data(using: .utf8)!)
+        XCTAssertEqual(try! rocksDB.get(key: "testKey"), value1)
     }
 
     static var allTests = [
-        ("testRocksDB", testRocksDB),
+        ("testSimplePut", testSimplePut),
     ]
 }

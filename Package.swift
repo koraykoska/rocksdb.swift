@@ -32,12 +32,12 @@ let rocksDBCommitDate = String(
 ).split(separator: "\n")[0]).trimmingCharacters(in: .whitespacesAndNewlines)
 
 let package = Package(
-    name: "rocksdb",
+    name: "RocksDB",
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
-            name: "rocksdb",
-            targets: ["rocksdb"]),
+            name: "RocksDB",
+            targets: ["RocksDB"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -296,12 +296,12 @@ let package = Package(
                 .define("ROCKSDB_BUILD_GIT_DATE_ENV", to: "\"rocksdb_build_git_date:\(rocksDBCommitDate)\"")
             ]),
         .target(
-            name: "rocksdb",
+            name: "RocksDB",
             dependencies: ["librocksdb"],
-            path: "Sources/rocksdb"),
+            path: "Sources/RocksDB"),
         .testTarget(
-            name: "rocksdbTests",
-            dependencies: ["rocksdb"]),
+            name: "RocksDBTests",
+            dependencies: ["RocksDB"]),
     ],
     cxxLanguageStandard: .cxx11
 )

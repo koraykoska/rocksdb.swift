@@ -19,11 +19,11 @@ public final class RocksDB {
 
     public enum Error: Swift.Error {
 
-        case openFailed(message: String?)
+        case openFailed(message: String)
 
-        case putFailed(message: String?)
+        case putFailed(message: String)
 
-        case getFailed(message: String?)
+        case getFailed(message: String)
 
         case dataNotConvertible
     }
@@ -32,10 +32,12 @@ public final class RocksDB {
 
     public let path: URL
 
-    private let dbOptions: OpaquePointer
-    private let writeOptions: OpaquePointer
-    private let readOptions: OpaquePointer
-    private let db: OpaquePointer
+    private let dbOptions: OpaquePointer!
+    private let writeOptions: OpaquePointer!
+    private let readOptions: OpaquePointer!
+    private let db: OpaquePointer!
+
+    private var errorPointer: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?> = UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>.allocate(capacity: 1)
 
     // MARK: - Initialization
 
@@ -64,10 +66,9 @@ public final class RocksDB {
         self.readOptions = rocksdb_readoptions_create()
 
         // open DB
-        let err: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>? = nil
-        self.db = rocksdb_open(dbOptions, path.absoluteString.withCString({ $0 }), err)
+        self.db = rocksdb_open(dbOptions, path.path, errorPointer)
 
-        try throwIfError(err: err, throwable: Error.openFailed)
+        try throwIfError(err: errorPointer, throwable: Error.openFailed)
     }
 
     deinit {
@@ -75,6 +76,8 @@ public final class RocksDB {
         rocksdb_readoptions_destroy(readOptions)
         rocksdb_options_destroy(dbOptions)
         rocksdb_close(db)
+
+        free(errorPointer)
     }
 
     // MARK: - Helper functions
@@ -84,12 +87,14 @@ public final class RocksDB {
     ///
     /// - parameter err: The error to check.
     /// - parameter throwable: The throwable function which takes the error message and returns an Error which will be thrown.
-    private func throwIfError(err: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>?, throwable: (_ str: String?) -> Swift.Error) throws {
-        if let err = err {
-            var message: String? = nil
-            if let pointee = err.pointee {
-                message = String(cString: pointee)
-            }
+    private func throwIfError(err: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>, throwable: (_ str: String) -> Swift.Error) throws {
+        if let pointee = err.pointee {
+            let message = String(cString: pointee)
+
+            // free and set error pointee to nil to be reusable later
+            free(pointee)
+            err.pointee = nil
+
             throw throwable(message)
         }
     }
@@ -104,16 +109,13 @@ public final class RocksDB {
     ///
     /// - throws: If the write operation fails (`Error.putFailed(message:)`)
     public func put(key: String, value: Data) throws {
-        let err: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>? = nil
-
-        let cKey = key.withCString({ $0 })
         let cValue = [UInt8](value).map { uint8Val in
             return Int8(bitPattern: uint8Val)
         }
 
-        rocksdb_put(db, writeOptions, cKey, strlen(cKey), cValue, cValue.count, err)
+        rocksdb_put(db, writeOptions, key, strlen(key), cValue, cValue.count, errorPointer)
 
-        try throwIfError(err: err, throwable: Error.putFailed)
+        try throwIfError(err: errorPointer, throwable: Error.putFailed)
     }
 
     /// Puts the given value as a string into this database for the given key.
@@ -127,9 +129,9 @@ public final class RocksDB {
     public func put(key: String, value: String) throws {
         if let dataValue = value.data(using: .utf8) {
             try put(key: key, value: dataValue)
+        } else {
+            throw Error.dataNotConvertible
         }
-
-        throw Error.dataNotConvertible
     }
 
     /// Returns the value for the given key in the database.
@@ -138,14 +140,10 @@ public final class RocksDB {
     ///
     /// - throws: If the get operation fails (`Error.getFailed(message:)`)
     public func get(key: String) throws -> Data {
-        let err: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>? = nil
-
-        let cKey = key.withCString({ $0 })
-
         var len: Int = 0
-        let returnValue = rocksdb_get(db, readOptions, cKey, strlen(cKey), &len, err)
+        let returnValue = rocksdb_get(db, readOptions, key, strlen(key), &len, errorPointer)
 
-        try throwIfError(err: err, throwable: Error.getFailed)
+        try throwIfError(err: errorPointer, throwable: Error.getFailed)
 
         let copy = Data(Array(UnsafeBufferPointer(start: returnValue, count: len)).map({ UInt8(bitPattern: $0) }))
 
