@@ -25,7 +25,7 @@ the upstream rocksdb library. Patch version varies.
 
   s.pod_target_xcconfig = {
     'GCC_PREPROCESSOR_DEFINITIONS' => 'ROCKSDB_PLATFORM_POSIX=1 ROCKSDB_LIB_IO_POSIX=1 PORTABLE=1 OS_MACOSX=1',
-    'HEADER_SEARCH_PATHS' => '"${PODS_ROOT}/rocksdb.swift/librocksdb/upstream" "${PODS_ROOT}/rocksdb.swift/librocksdb/upstream/include" "${PODS_ROOT}/rocksdb.swift/librocksdb/upstream/util"',
+    'HEADER_SEARCH_PATHS' => '"${PODS_ROOT}/rocksdb.swift" "${PODS_ROOT}/rocksdb.swift/include" "${PODS_ROOT}/rocksdb.swift/util"',
     'WARNING_CFLAGS' => '-Wno-shorten-64-to-32 -Wno-comma -Wno-unreachable-code -Wno-conditional-uninitialized -Wno-deprecated-declarations',
     'USE_HEADERMAP' => 'No'
   }
@@ -36,8 +36,23 @@ the upstream rocksdb library. Patch version varies.
 
   s.libraries = 'c++'
 
-  s.source_files = 'Sources/librocksdb/upstream/{cache,db,env,file,include,logging,memory,memtable,monitoring,options,port,table,test_util,trace_replay,util,utilities}/**/*.{cc,c,h}',
-                   'Sources/librocksdb/upstream/patches/build_version.cc',
+  s.source_files = 'Sources/librocksdb/upstream/cache/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/db/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/env/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/file/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/include/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/logging/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/memory/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/memtable/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/monitoring/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/options/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/port/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/table/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/test_util/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/trace_replay/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/util/**/*.{cc,c,h}',
+                   'Sources/librocksdb/upstream/utilities/**/*.{cc,c,h}',
+                   'Sources/librocksdb/patches/build_version.cc'
                    # 'Sources/RocksDB/**/*.swift'
   s.public_header_files = 'Sources/librocksdb/upstream/include/**/*.h'
   # s.private_header_files = 'Sources/librocksdb/upstream/{cache,db,env,file,logging,memory,memtable,monitoring,options,port,table,test_util,trace_replay,util,utilities}/**/*.h'
