@@ -191,7 +191,7 @@ let package = Package(
                 "upstream/table/mock_table.cc",
                 "upstream/table/table_reader_bench.cc",
 
-                //test_util
+                // test_util
                 "upstream/test_util/testharness.cc",
                 "upstream/test_util/testharness.h",
 
