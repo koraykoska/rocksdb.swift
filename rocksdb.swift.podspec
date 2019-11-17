@@ -75,5 +75,6 @@ the upstream rocksdb library. Patch version varies.
                     'Sources/librocksdb/upstream/utilities/cassandra/format.cc',
                     'Sources/librocksdb/upstream/utilities/cassandra/format.h',
                     'Sources/librocksdb/upstream/utilities/cassandra/cassandra_compaction_filter.cc',
-                    'Sources/librocksdb/upstream/utilities/cassandra/cassandra_compaction_filter.h'
+                    'Sources/librocksdb/upstream/utilities/cassandra/cassandra_compaction_filter.h',
+                    'Sources/librocksdb/upstream/env/env_hdfs.cc'
 end
