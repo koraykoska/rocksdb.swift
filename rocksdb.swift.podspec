@@ -25,14 +25,16 @@ the upstream rocksdb library. Patch version varies.
 
   s.pod_target_xcconfig = {
     'SWIFT_INCLUDE_PATHS' => '${PODS_ROOT}',
-    'HEADER_SEARCH_PATHS' => '"${PODS_ROOT}/Sources/librocksdb/upstream"\n"${PODS_ROOT}/Sources/librocksdb/upstream/include"\n"${PODS_ROOT}/Sources/librocksdb/upstream/util"\n"${PODS_ROOT}/Sources/librocksdb/public_headers"'
+    'HEADER_SEARCH_PATHS' => '"${PODS_ROOT}/headers" "${PODS_ROOT}/headers/include" "${PODS_ROOT}/headers/util" "${PODS_ROOT}/Sources/librocksdb/upstream" "${PODS_ROOT}/Sources/librocksdb/upstream/include" "${PODS_ROOT}/Sources/librocksdb/upstream/util"'
   }
 
-  s.source_files = 'Sources/librocksdb/upstream/{cache,db,env,file,include,logging,memory,memtable,monitoring,options,port,table,test_util,trace_replay,util,utilities}/*.*',
+  s.header_dir = 'headers'
+
+  s.source_files = 'Sources/librocksdb/upstream/{cache,db,env,file,include,logging,memory,memtable,monitoring,options,port,table,test_util,trace_replay,util,utilities}/**/*.cc',
                    'Sources/librocksdb/upstream/patches/build_version.cc',
-                   'Sources/RocksDB/**/*.swift',
-                   'Sources/librocksdb/public_headers/*.h'
-  s.public_header_files = 'Sources/librocksdb/public_headers/*.h'
+                   #'Sources/RocksDB/**/*.swift'
+  s.public_header_files = 'Sources/librocksdb/upstream/include/rocksdb/c.h'
+  s.private_header_files = 'Sources/librocksdb/upstream/{cache,db,env,file,include,logging,memory,memtable,monitoring,options,port,table,test_util,trace_replay,util,utilities}/**/*.h'
   s.exclude_files = 'Sources/librocksdb/upstream/cache/cache_test.cc',
                     'Sources/librocksdb/upstream/cache/lru_cache_test.cc',
                     'Sources/librocksdb/upstream/cache/cache_bench.cc',

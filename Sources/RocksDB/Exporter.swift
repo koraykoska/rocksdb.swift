@@ -1,1 +1,3 @@
-@_exported import librocksdb
+#if canImport(librocksdb)
+    @_exported import librocksdb
+#endif
