@@ -25,13 +25,13 @@ the upstream rocksdb library. Patch version varies.
 
   s.pod_target_xcconfig = {
     'GCC_PREPROCESSOR_DEFINITIONS' => 'ROCKSDB_PLATFORM_POSIX=1 ROCKSDB_LIB_IO_POSIX=1 PORTABLE=1 OS_MACOSX=1',
-    'HEADER_SEARCH_PATHS' => '"${PODS_ROOT}/rocksdb.swift" "${PODS_ROOT}/rocksdb.swift/include" "${PODS_ROOT}/rocksdb.swift/util"',
+    'HEADER_SEARCH_PATHS' => '"${PODS_ROOT}/rocksdb.swift/Sources/librocksdb/upstream" "${PODS_ROOT}/rocksdb.swift/Sources/librocksdb/upstream/include" "${PODS_ROOT}/rocksdb.swift/Sources/librocksdb/upstream/util"',
     'WARNING_CFLAGS' => '-Wno-shorten-64-to-32 -Wno-comma -Wno-unreachable-code -Wno-conditional-uninitialized -Wno-deprecated-declarations',
     'USE_HEADERMAP' => 'No'
   }
   #  "${PODS_ROOT}/rocksdb.swift/librocksdb/upstream/include" "${PODS_ROOT}/rocksdb.swift/librocksdb/upstream/util"
 
-  s.header_dir = 'rocksdb'
+  # s.header_dir = 'rocksdb'
   s.header_mappings_dir = 'Sources/librocksdb'
 
   s.libraries = 'c++'
@@ -52,7 +52,8 @@ the upstream rocksdb library. Patch version varies.
                    'Sources/librocksdb/upstream/trace_replay/**/*.{cc,c,h}',
                    'Sources/librocksdb/upstream/util/**/*.{cc,c,h}',
                    'Sources/librocksdb/upstream/utilities/**/*.{cc,c,h}',
-                   'Sources/librocksdb/patches/build_version.cc'
+                   'Sources/librocksdb/patches/build_version.cc',
+                   'Sources/librocksdb/public_headers/librocksdb.h'
                    # 'Sources/RocksDB/**/*.swift'
   s.public_header_files = 'Sources/librocksdb/public_headers/librocksdb.h'
   s.private_header_files = 'Sources/librocksdb/upstream/**/*.h'
