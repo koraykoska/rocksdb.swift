@@ -54,8 +54,8 @@ the upstream rocksdb library. Patch version varies.
                    'Sources/librocksdb/upstream/utilities/**/*.{cc,c,h}',
                    'Sources/librocksdb/patches/build_version.cc'
                    # 'Sources/RocksDB/**/*.swift'
-  s.public_header_files = 'Sources/librocksdb/upstream/include/c.h'
-  # s.private_header_files = 'Sources/librocksdb/upstream/{cache,db,env,file,logging,memory,memtable,monitoring,options,port,table,test_util,trace_replay,util,utilities}/**/*.h'
+  s.public_header_files = 'Sources/librocksdb/public_headers/librocksdb.h'
+  s.private_header_files = 'Sources/librocksdb/upstream/**/*.h'
   s.exclude_files = '**/*_test.{cc,c}',
                     '**/*_bench.cc',
                     'Sources/librocksdb/upstream/db/db_test2.cc',
@@ -74,6 +74,5 @@ the upstream rocksdb library. Patch version varies.
                     'Sources/librocksdb/upstream/utilities/cassandra/format.cc',
                     'Sources/librocksdb/upstream/utilities/cassandra/format.h',
                     'Sources/librocksdb/upstream/utilities/cassandra/cassandra_compaction_filter.cc',
-                    'Sources/librocksdb/upstream/utilities/cassandra/cassandra_compaction_filter.h',
-                    'Sources/librocksdb/upstream/include/utilities/convenience.h'
+                    'Sources/librocksdb/upstream/utilities/cassandra/cassandra_compaction_filter.h'
 end
