@@ -1,10 +1,3 @@
-//
-//  RocksDB.swift
-//  librocksdb
-//
-//  Created by Koray Koska on 16.11.19.
-//
-
 import Foundation
 import librocksdb
 #if os(Linux)
