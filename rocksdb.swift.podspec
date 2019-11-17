@@ -54,7 +54,7 @@ the upstream rocksdb library. Patch version varies.
                    'Sources/librocksdb/upstream/utilities/**/*.{cc,c,h}',
                    'Sources/librocksdb/upstream/tools/sst_dump_tool_imp.h',
                    'Sources/librocksdb/patches/build_version.cc',
-                   # 'Sources/RocksDB/**/*.swift'
+                   'Sources/RocksDB/**/*.swift'
   s.public_header_files = 'Sources/librocksdb/upstream/include/rocksdb/c.h'
   # s.private_header_files = 'Sources/librocksdb/upstream/**/*.h'
   s.exclude_files = '**/*_test.{cc,c}',
