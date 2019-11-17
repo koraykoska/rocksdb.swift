@@ -24,7 +24,7 @@ the upstream rocksdb library. Patch version varies.
   s.module_name = 'RocksDB'
 
   s.pod_target_xcconfig = {
-    'GCC_PREPROCESSOR_DEFINITIONS' => 'ROCKSDB_PLATFORM_POSIX=1 ROCKSDB_LIB_IO_POSIX=1 PORTABLE=1 OS_MACOSX=1',
+    'GCC_PREPROCESSOR_DEFINITIONS' => 'ROCKSDB_PLATFORM_POSIX=1 ROCKSDB_LIB_IO_POSIX=1 PORTABLE=1 OS_MACOSX=1 ROCKSDB_BUILD_GIT_SHA_ENV=e3169e3ea8762d2f34880742106858a23c8dc8b7 ROCKSDB_BUILD_GIT_DATE_ENV="Mon Oct 21 12:07:58 2019 -0700"',
     'HEADER_SEARCH_PATHS' => '"${PODS_ROOT}/rocksdb.swift/Sources/librocksdb/upstream" "${PODS_ROOT}/rocksdb.swift/Sources/librocksdb/upstream/include" "${PODS_ROOT}/rocksdb.swift/Sources/librocksdb/upstream/util"',
     'WARNING_CFLAGS' => '-Wno-shorten-64-to-32 -Wno-comma -Wno-unreachable-code -Wno-conditional-uninitialized -Wno-deprecated-declarations',
     'USE_HEADERMAP' => 'No'
