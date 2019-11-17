@@ -8,8 +8,6 @@ import Glibc
 import Darwin
 #endif
 
-#if canImport(librocksdb)
-
 public final class RocksDB {
 
     // MARK: - Errors
@@ -147,5 +145,3 @@ public final class RocksDB {
         return copy
     }
 }
-
-#endif
