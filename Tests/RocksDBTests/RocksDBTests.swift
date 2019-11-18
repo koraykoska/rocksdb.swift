@@ -76,7 +76,50 @@ final class RocksDBTests: XCTestCase {
     }
 
     func testPrefixedDelete() {
+        let prefixedPath = "/tmp/\(UUID().uuidString)"
 
+        let prefixedDB = try! RocksDB(path: URL(fileURLWithPath: prefixedPath), prefix: "correctprefix")
+
+        try! prefixedDB.put(key: "testText", value: "lolamkhaha")
+        try! prefixedDB.put(key: "testEmoji", value: "😂")
+        try! prefixedDB.put(key: "testTextEmoji", value: "emojitext 😂")
+        try! prefixedDB.put(key: "testMultipleEmoji", value: "😂😂😂")
+
+        prefixedDB.closeDB()
+
+        let wrongPrefixedDB = try! RocksDB(path: URL(fileURLWithPath: prefixedPath), prefix: "wrongprefix")
+
+        try! wrongPrefixedDB.put(key: "testText", value: "lolamkhaha")
+        try! wrongPrefixedDB.put(key: "testEmoji", value: "😂")
+        try! wrongPrefixedDB.put(key: "testTextEmoji", value: "emojitext 😂")
+        try! wrongPrefixedDB.put(key: "testMultipleEmoji", value: "😂😂😂")
+
+        wrongPrefixedDB.closeDB()
+
+        let prefixedDB2 = try! RocksDB(path: URL(fileURLWithPath: prefixedPath), prefix: "correctprefix")
+
+        try! prefixedDB2.delete(key: "testText")
+        try! prefixedDB2.delete(key: "testEmoji")
+        try! prefixedDB2.delete(key: "testTextEmoji")
+        try! prefixedDB2.delete(key: "testMultipleEmoji")
+
+        XCTAssertEqual(try! prefixedDB2.get(type: String.self, key: "testText"), "")
+        XCTAssertEqual(try! prefixedDB2.get(type: String.self, key: "testEmoji"), "")
+        XCTAssertEqual(try! prefixedDB2.get(type: String.self, key: "testTextEmoji"), "")
+        XCTAssertEqual(try! prefixedDB2.get(type: String.self, key: "testMultipleEmoji"), "")
+
+        prefixedDB2.closeDB()
+
+        let wrongPrefixedDB2 = try! RocksDB(path: URL(fileURLWithPath: prefixedPath), prefix: "wrongprefix")
+
+        XCTAssertEqual(try! wrongPrefixedDB2.get(type: String.self, key: "testText"), "lolamkhaha")
+        XCTAssertEqual(try! wrongPrefixedDB2.get(type: String.self, key: "testEmoji"), "😂")
+        XCTAssertEqual(try! wrongPrefixedDB2.get(type: String.self, key: "testTextEmoji"), "emojitext 😂")
+        XCTAssertEqual(try! wrongPrefixedDB2.get(type: String.self, key: "testMultipleEmoji"), "😂😂😂")
+
+        wrongPrefixedDB2.closeDB()
+
+        try! FileManager.default.removeItem(at: wrongPrefixedDB.path)
     }
 
     static var allTests = [
