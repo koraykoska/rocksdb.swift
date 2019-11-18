@@ -29,6 +29,10 @@ public final class RocksDB {
 
     public let path: URL
 
+    public let prefix: String?
+
+    private var isOpen = false
+
     private let dbOptions: OpaquePointer!
     private let writeOptions: OpaquePointer!
     private let readOptions: OpaquePointer!
@@ -42,10 +46,12 @@ public final class RocksDB {
     /// Creates the database file if it does not exist.
     ///
     /// - parameter path: The url to the database file on the filesystem.
+    /// - parameter prefix: The prefix which will be appended to all keys for operations on this instance.
     ///
     /// - throws: If the database file cannot be opened (`RocksDB.Error.openFailed(message:)`)
-    public init(path: URL) throws {
+    public init(path: URL, prefix: String? = nil) throws {
         self.path = path
+        self.prefix = prefix
 
         self.dbOptions = rocksdb_options_create()
         let cpus = sysconf(_SC_NPROCESSORS_ONLN)
@@ -62,10 +68,18 @@ public final class RocksDB {
         // create readoptions
         self.readOptions = rocksdb_readoptions_create()
 
+        // Prefix
+        if let prefix = prefix {
+            rocksdb_options_set_prefix_extractor(dbOptions, rocksdb_slicetransform_create_fixed_prefix(prefix.count))
+            rocksdb_readoptions_set_prefix_same_as_start(readOptions, 1)
+        }
+
         // open DB
         self.db = rocksdb_open(dbOptions, path.path, &errorPointer)
 
         try throwIfError(err: &errorPointer, throwable: Error.openFailed)
+
+        isOpen = true
     }
 
     deinit {
@@ -78,7 +92,7 @@ public final class RocksDB {
         if dbOptions != nil {
             rocksdb_options_destroy(dbOptions)
         }
-        if db != nil {
+        if db != nil && isOpen {
             rocksdb_close(db)
         }
     }
@@ -102,6 +116,20 @@ public final class RocksDB {
         }
     }
 
+    /// Returns the given key with the database prefix, if any.
+    ///
+    /// - parameter from: The key which should be prefixed.
+    ///
+    /// - returns: The prefixed key.
+    private func getPrefixedKey(from key: String) -> String {
+        var key = key
+        if let prefix = prefix {
+            key = "\(prefix)\(key)"
+        }
+
+        return key
+    }
+
     // MARK: - Library functions
 
     /// Puts the given value into this database for the given key.
@@ -112,6 +140,8 @@ public final class RocksDB {
     ///
     /// - throws: If the write operation fails (`Error.putFailed(message:)`)
     public func put(key: String, value: Data) throws {
+        let key = getPrefixedKey(from: key)
+
         let cValue = [UInt8](value).map { uint8Val in
             return Int8(bitPattern: uint8Val)
         }
@@ -140,6 +170,8 @@ public final class RocksDB {
     ///
     /// - throws: If the get operation fails (`Error.getFailed(message:)`)
     public func get(key: String) throws -> Data {
+        let key = getPrefixedKey(from: key)
+
         var len: Int = 0
         let returnValue = rocksdb_get(db, readOptions, key, strlen(key), &len, &errorPointer)
 
@@ -172,8 +204,20 @@ public final class RocksDB {
     ///
     /// - throws: If the delete operation fails (`Error.deleteFailed(message:)`)
     public func delete(key: String) throws {
+        let key = getPrefixedKey(from: key)
+
         rocksdb_delete(db, writeOptions, key, strlen(key), &errorPointer)
 
         try throwIfError(err: &errorPointer, throwable: Error.deleteFailed)
+    }
+}
+
+// MARK: - Internal functions
+
+extension RocksDB {
+
+    internal func closeDB() {
+        rocksdb_close(db)
+        isOpen = false
     }
 }
