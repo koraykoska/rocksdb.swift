@@ -217,7 +217,9 @@ public final class RocksDB {
 extension RocksDB {
 
     internal func closeDB() {
-        rocksdb_close(db)
-        isOpen = false
+        if isOpen {
+            rocksdb_close(db)
+            isOpen = false
+        }
     }
 }
