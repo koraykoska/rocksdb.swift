@@ -20,6 +20,8 @@ public final class RocksDB {
 
         case getFailed(message: String)
 
+        case deleteFailed(message: String)
+
         case dataNotConvertible
     }
 
@@ -67,10 +69,18 @@ public final class RocksDB {
     }
 
     deinit {
-        rocksdb_writeoptions_destroy(writeOptions)
-        rocksdb_readoptions_destroy(readOptions)
-        rocksdb_options_destroy(dbOptions)
-        rocksdb_close(db)
+        if writeOptions != nil {
+            rocksdb_writeoptions_destroy(writeOptions)
+        }
+        if readOptions != nil {
+            rocksdb_readoptions_destroy(readOptions)
+        }
+        if dbOptions != nil {
+            rocksdb_options_destroy(dbOptions)
+        }
+        if db != nil {
+            rocksdb_close(db)
+        }
     }
 
     // MARK: - Helper functions
@@ -111,23 +121,20 @@ public final class RocksDB {
         try throwIfError(err: &errorPointer, throwable: Error.putFailed)
     }
 
-    /// Puts the given value as a string into this database for the given key.
+    /// Puts the given value encoded according to its definition into this database for the given key.
     /// Overwrites the key if it is already present.
     ///
     /// - parameter key: The key under which the value should be saved.
-    /// - parameter value: The string which should be saved.
+    /// - parameter value: The value which should be saved.
     ///
-    /// - throws: If the given value is not convertible to Data (`Error.dataNotConvertible`) and
-    ///           if the write operation fails (`Error.putFailed(message:)`)
-    public func put(key: String, value: String) throws {
-        if let dataValue = value.data(using: .utf8) {
-            try put(key: key, value: dataValue)
-        } else {
-            throw Error.dataNotConvertible
-        }
+    /// - throws: If the write operation fails (`Error.putFailed(message:)`) and
+    ///           if the given value is not convertible to Data (`Error.dataNotConvertible`)
+    public func put<T: RocksDBValueRepresentable>(key: String, value: T) throws {
+        try put(key: key, value: value.makeData())
     }
 
     /// Returns the value for the given key in the database.
+    /// Returns empty Data if the key is not set in the database.
     ///
     /// - parameter key: The key to search the database for.
     ///
@@ -143,5 +150,30 @@ public final class RocksDB {
         free(returnValue)
 
         return copy
+    }
+
+    /// Returns the value for the given key in the database initialized with the given type.
+    ///
+    /// The given type decides how to treat empty fields. Because the database returns an empty Data object
+    /// if the key does not exist, `String` will for example be an empty String.
+    ///
+    /// - parameter type: The type to which the data should be converted.
+    /// - parameter key: The key to search the database for.
+    ///
+    /// - throws: If the get operation fails (`Error.getFailed(message:)`) and
+    ///           if the given type is not initializable from the data (`Error.dataNotConvertible`)
+    public func get<T: RocksDBValueInitializable>(type: T.Type, key: String) throws -> T {
+        return try type.init(data: get(key: key))
+    }
+
+    /// Deletes the given key in the database, if it is available.
+    ///
+    /// - parameter key: The key to delete.
+    ///
+    /// - throws: If the delete operation fails (`Error.deleteFailed(message:)`)
+    public func delete(key: String) throws {
+        rocksdb_delete(db, writeOptions, key, strlen(key), &errorPointer)
+
+        try throwIfError(err: &errorPointer, throwable: Error.deleteFailed)
     }
 }

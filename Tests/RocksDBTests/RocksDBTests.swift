@@ -3,7 +3,7 @@ import XCTest
 
 final class RocksDBTests: XCTestCase {
 
-    var rocksDB: RocksDB?
+    var rocksDB: RocksDB!
 
     override func setUp() {
         super.setUp()
@@ -15,16 +15,30 @@ final class RocksDBTests: XCTestCase {
     override func tearDown() {
         super.tearDown()
 
-        try! FileManager.default.removeItem(at: rocksDB!.path)
+        try! FileManager.default.removeItem(at: rocksDB.path)
     }
 
     func testSimplePut() {
-        let value1 = "thisisatestmessage".data(using: .utf8)!
-        try! rocksDB!.put(key: "testKey", value: value1)
-        XCTAssertEqual(try! rocksDB!.get(key: "testKey"), value1)
+        try! rocksDB.put(key: "testText", value: "lolamkhaha")
+        try! rocksDB.put(key: "testEmoji", value: "😂")
+        try! rocksDB.put(key: "testTextEmoji", value: "emojitext 😂")
+        try! rocksDB.put(key: "testMultipleEmoji", value: "😂😂😂")
+
+        XCTAssertEqual(try! rocksDB!.get(type: String.self, key: "testText"), "lolamkhaha")
+        XCTAssertEqual(try! rocksDB!.get(type: String.self, key: "testEmoji"), "😂")
+        XCTAssertEqual(try! rocksDB!.get(type: String.self, key: "testTextEmoji"), "emojitext 😂")
+        XCTAssertEqual(try! rocksDB!.get(type: String.self, key: "testMultipleEmoji"), "😂😂😂")
+    }
+
+    func testSimpleDelete() {
+        try! rocksDB.put(key: "testDeleteKey", value: "this is a simple value 😘")
+        try! rocksDB.delete(key: "testDeleteKey")
+
+        XCTAssertEqual(try! rocksDB.get(type: String.self, key: "testDeleteKey"), "")
     }
 
     static var allTests = [
         ("testSimplePut", testSimplePut),
+        ("testSimpleDelete", testSimpleDelete),
     ]
 }
