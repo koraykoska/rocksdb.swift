@@ -210,6 +210,97 @@ public final class RocksDB {
 
         try throwIfError(err: &errorPointer, throwable: Error.deleteFailed)
     }
+
+    public func sequence<Key: RocksDBValueInitializable, Value: RocksDBValueInitializable>(
+        keyType: Key.Type? = nil,
+        valueType: Value.Type? = nil,
+        gte: String? = nil,
+        lte: String? = nil
+    ) -> RocksDBSequence<Key, Value> {
+        let gte = getPrefixedKey(from: gte ?? "")
+        let lte = getPrefixedKey(from: lte ?? "")
+        return RocksDBSequence(iterator: RocksDBIterator(db: db, prefix: prefix, gte: gte, lte: lte))
+    }
+}
+
+// MARK: - Iterator
+
+public struct RocksDBSequence<K: RocksDBValueInitializable, V: RocksDBValueInitializable>: Sequence {
+
+    private let iterator: RocksDBIterator<K, V>
+
+    fileprivate init(iterator: RocksDBIterator<K, V>) {
+        self.iterator = iterator
+    }
+
+    public __consuming func makeIterator() -> RocksDBIterator<K, V> {
+        return iterator
+    }
+}
+
+public class RocksDBIterator<K: RocksDBValueInitializable, V: RocksDBValueInitializable>: IteratorProtocol {
+
+    private let readopts: OpaquePointer
+    private let iterator: OpaquePointer
+
+    private var isFirstIteration = true
+
+    private var valid = true
+
+    fileprivate init(db: OpaquePointer, prefix: String?, gte: String, lte: String?) {
+        self.readopts = rocksdb_readoptions_create()
+        if let _ = prefix {
+            rocksdb_readoptions_set_prefix_same_as_start(readopts, 1)
+        }
+//        if let gte = gte {
+//            rocksdb_readoptions_set_iterate_lower_bound(readopts, gte, strlen(gte))
+//        }
+//        if let lte = lte {
+//            rocksdb_readoptions_set_iterate_upper_bound(readopts, lte, strlen(lte))
+//        }
+
+        self.iterator = rocksdb_create_iterator(db, readopts)
+
+        rocksdb_iter_seek(iterator, gte, strlen(gte))
+    }
+
+    public func next() -> (key: K, value: V)? {
+        if !valid {
+            return nil
+        }
+
+        if isFirstIteration {
+            isFirstIteration = false
+        } else {
+            rocksdb_iter_next(iterator)
+        }
+
+        if rocksdb_iter_valid(iterator) == 0 {
+            valid = false
+            return nil
+        }
+
+        var klen: Int = 0
+        let keyReturn = rocksdb_iter_key(iterator, &klen)
+        let keyCopy = Data(Array(UnsafeBufferPointer(start: keyReturn, count: klen)).map({ UInt8(bitPattern: $0) }))
+        guard let k = try? K.init(data: keyCopy) else {
+            return nil
+        }
+
+        var vlen: Int = 0
+        let valReturn = rocksdb_iter_value(iterator, &vlen)
+        let valCopy = Data(Array(UnsafeBufferPointer(start: valReturn, count: vlen)).map({ UInt8(bitPattern: $0) }))
+        guard let v = try? V.init(data: valCopy) else {
+            return nil
+        }
+
+        return (key: k, value: v)
+    }
+
+    deinit {
+        rocksdb_iter_destroy(iterator)
+        rocksdb_readoptions_destroy(readopts)
+    }
 }
 
 // MARK: - Internal functions

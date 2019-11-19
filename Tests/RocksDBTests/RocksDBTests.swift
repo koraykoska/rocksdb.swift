@@ -7,18 +7,16 @@ final class RocksDBTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-
-        let path = "/tmp/\(UUID().uuidString)"
-        rocksDB = try! RocksDB(path: URL(fileURLWithPath: path))
     }
 
     override func tearDown() {
         super.tearDown()
-
-        try! FileManager.default.removeItem(at: rocksDB.path)
     }
 
     func testSimplePut() {
+        let path = "/tmp/\(UUID().uuidString)"
+        rocksDB = try! RocksDB(path: URL(fileURLWithPath: path))
+
         try! rocksDB.put(key: "testText", value: "lolamkhaha")
         try! rocksDB.put(key: "testEmoji", value: "😂")
         try! rocksDB.put(key: "testTextEmoji", value: "emojitext 😂")
@@ -28,13 +26,24 @@ final class RocksDBTests: XCTestCase {
         XCTAssertEqual(try! rocksDB.get(type: String.self, key: "testEmoji"), "😂")
         XCTAssertEqual(try! rocksDB.get(type: String.self, key: "testTextEmoji"), "emojitext 😂")
         XCTAssertEqual(try! rocksDB.get(type: String.self, key: "testMultipleEmoji"), "😂😂😂")
+
+        rocksDB.closeDB()
+
+        try! FileManager.default.removeItem(at: rocksDB.path)
     }
 
     func testSimpleDelete() {
+        let path = "/tmp/\(UUID().uuidString)"
+        rocksDB = try! RocksDB(path: URL(fileURLWithPath: path))
+
         try! rocksDB.put(key: "testDeleteKey", value: "this is a simple value 😘")
         try! rocksDB.delete(key: "testDeleteKey")
 
         XCTAssertEqual(try! rocksDB.get(type: String.self, key: "testDeleteKey"), "")
+
+        rocksDB.closeDB()
+
+        try! FileManager.default.removeItem(at: rocksDB.path)
     }
 
     func testPrefixedPut() {
@@ -120,6 +129,49 @@ final class RocksDBTests: XCTestCase {
         wrongPrefixedDB2.closeDB()
 
         try! FileManager.default.removeItem(at: wrongPrefixedDB.path)
+    }
+
+    func testSimpleIterator() {
+        let path = "/tmp/\(UUID().uuidString)"
+        rocksDB = try! RocksDB(path: URL(fileURLWithPath: path))
+
+        let orderedKeysAndValues = [
+            (key: "testEmoji", value: "😂"),
+            (key: "testMultipleEmoji", value: "😂😂😂"),
+            (key: "testText", value: "lolamkhaha"),
+            (key: "testTextEmoji", value: "emojitext 😂")
+        ]
+
+        for (k, v) in orderedKeysAndValues {
+            try! rocksDB.put(key: k, value: v)
+        }
+
+        var i = 0
+        for (key, val) in rocksDB.sequence(keyType: String.self, valueType: String.self) {
+            XCTAssertEqual(key, orderedKeysAndValues[i].key)
+            XCTAssertEqual(val, orderedKeysAndValues[i].value)
+            i += 1
+        }
+        XCTAssertEqual(i, 4)
+
+        i = 1
+        for (key, val) in rocksDB.sequence(keyType: String.self, valueType: String.self, gte: "testMultipleEmoji") {
+            XCTAssertEqual(key, orderedKeysAndValues[i].key)
+            XCTAssertEqual(val, orderedKeysAndValues[i].value)
+            i += 1
+        }
+        XCTAssertEqual(i, 4)
+
+//        i = 0
+//        for (key, val) in rocksDB.sequence(keyType: String.self, valueType: String.self, lte: "testMultipleEmoji") {
+//            XCTAssertEqual(key, orderedKeysAndValues[i].key)
+//            XCTAssertEqual(val, orderedKeysAndValues[i].value)
+//            i += 1
+//        }
+
+        rocksDB.closeDB()
+
+        try! FileManager.default.removeItem(at: rocksDB.path)
     }
 
     static var allTests = [

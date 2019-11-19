@@ -47,3 +47,13 @@ extension String: RocksDBValueConvertible {
     }
 }
 
+extension Data: RocksDBValueConvertible {
+
+    public init(data: Data) {
+        self = data
+    }
+
+    public func makeData() -> Data {
+        return self
+    }
+}
