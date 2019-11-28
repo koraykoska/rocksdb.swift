@@ -25,5 +25,9 @@ the upstream rocksdb library. Patch version varies.
 
   s.module_name = 'RocksDB'
 
+  s.pod_target_xcconfig = {
+    'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES'
+  }
+
   s.source_files = 'Sources/RocksDB/**/*.swift'
 end
