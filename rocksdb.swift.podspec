@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'rocksdb.swift'
-  s.version          = '6.4.8'
+  s.version          = '6.4.11'
   s.summary          = 'rocksdb Wrapper for Swift. Cocoapods and SPM support. Linux support.'
 
   s.description      = <<-DESC
