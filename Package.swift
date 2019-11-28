@@ -25,11 +25,13 @@ func shell(_ commands: String...) -> String {
 
     return output
 }
-let rocksDBHash = shell("git --git-dir=Sources/librocksdb/upstream/.git rev-parse HEAD")
-    .trimmingCharacters(in: .whitespacesAndNewlines)
-let rocksDBCommitDate = String(
-    shell("git --git-dir=Sources/librocksdb/upstream/.git show --format='%ci' \(rocksDBHash)"
-).split(separator: "\n")[0]).trimmingCharacters(in: .whitespacesAndNewlines)
+// let rocksDBHash = shell("git --git-dir=Sources/librocksdb/upstream/.git rev-parse HEAD")
+//     .trimmingCharacters(in: .whitespacesAndNewlines)
+// let rocksDBCommitDate = String(
+//     shell("git --git-dir=Sources/librocksdb/upstream/.git show --format='%ci' \(rocksDBHash)"
+// ).split(separator: "\n")[0]).trimmingCharacters(in: .whitespacesAndNewlines)
+let rocksDBHash = "invalid_hash_not_set"
+let rocksDBCommitDate = "invalid_date_not_set"
 
 let package = Package(
     name: "RocksDB",
