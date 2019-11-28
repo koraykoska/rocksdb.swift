@@ -162,12 +162,29 @@ final class RocksDBTests: XCTestCase {
         }
         XCTAssertEqual(i, 4)
 
-//        i = 0
-//        for (key, val) in rocksDB.sequence(keyType: String.self, valueType: String.self, lte: "testMultipleEmoji") {
-//            XCTAssertEqual(key, orderedKeysAndValues[i].key)
-//            XCTAssertEqual(val, orderedKeysAndValues[i].value)
-//            i += 1
-//        }
+        i = 2
+        for (key, val) in rocksDB.sequence(keyType: String.self, valueType: String.self, gte: "testText") {
+            XCTAssertEqual(key, orderedKeysAndValues[i].key)
+            XCTAssertEqual(val, orderedKeysAndValues[i].value)
+            i += 1
+        }
+        XCTAssertEqual(i, 4)
+
+        i = 3
+        for (key, val) in rocksDB.sequence(keyType: String.self, valueType: String.self, lte: "testTextEmoji") {
+            XCTAssertEqual(key, orderedKeysAndValues[i].key)
+            XCTAssertEqual(val, orderedKeysAndValues[i].value)
+            i -= 1
+        }
+        XCTAssertEqual(i, -1)
+
+        i = 2
+        for (key, val) in rocksDB.sequence(keyType: String.self, valueType: String.self, lte: "testText") {
+            XCTAssertEqual(key, orderedKeysAndValues[i].key)
+            XCTAssertEqual(val, orderedKeysAndValues[i].value)
+            i -= 1
+        }
+        XCTAssertEqual(i, -1)
 
         rocksDB.closeDB()
 

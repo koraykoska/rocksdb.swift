@@ -214,12 +214,17 @@ public final class RocksDB {
     public func sequence<Key: RocksDBValueInitializable, Value: RocksDBValueInitializable>(
         keyType: Key.Type? = nil,
         valueType: Value.Type? = nil,
-        gte: String? = nil,
-        lte: String? = nil
+        gte: String? = nil
     ) -> RocksDBSequence<Key, Value> {
-        let gte = getPrefixedKey(from: gte ?? "")
-        let lte = getPrefixedKey(from: lte ?? "")
-        return RocksDBSequence(iterator: RocksDBIterator(db: db, prefix: prefix, gte: gte, lte: lte))
+        return RocksDBSequence(iterator: RocksDBIterator(db: db, prefix: prefix, gte: gte, lte: nil))
+    }
+
+    public func sequence<Key: RocksDBValueInitializable, Value: RocksDBValueInitializable>(
+        keyType: Key.Type? = nil,
+        valueType: Value.Type? = nil,
+        lte: String
+    ) -> RocksDBSequence<Key, Value> {
+        return RocksDBSequence(iterator: RocksDBIterator(db: db, prefix: prefix, gte: nil, lte: lte))
     }
 }
 
@@ -247,7 +252,15 @@ public class RocksDBIterator<K: RocksDBValueInitializable, V: RocksDBValueInitia
 
     private var valid = true
 
-    fileprivate init(db: OpaquePointer, prefix: String?, gte: String, lte: String?) {
+    private var reversed = false
+
+    /// Creates an iterator for the given instance of rocksdb.
+    /// Either gte or lte can be set but not both.
+    ///
+    /// - parameter prefix: The prefix of the iter operation.
+    /// - parameter gte: Search for keys greater than or equal the given (unprefixed).
+    /// - parameter lte: Search for keys lower than or equal the given (unprefixed). Starts a reverse search.
+    fileprivate init(db: OpaquePointer, prefix: String?, gte: String?, lte: String?) {
         self.readopts = rocksdb_readoptions_create()
         if let _ = prefix {
             rocksdb_readoptions_set_prefix_same_as_start(readopts, 1)
@@ -261,7 +274,27 @@ public class RocksDBIterator<K: RocksDBValueInitializable, V: RocksDBValueInitia
 
         self.iterator = rocksdb_create_iterator(db, readopts)
 
-        rocksdb_iter_seek(iterator, gte, strlen(gte))
+        // Set prefixes to gte and lte
+        var gtePrefixed: String? = nil
+        if let gte = gte {
+            gtePrefixed = "\(prefix ?? "")\(gte)"
+        }
+        var ltePrefixed: String? = nil
+        if let lte = lte {
+            ltePrefixed = "\(prefix ?? "")\(lte)"
+        }
+
+        // Seek to correct position and set reversed if needed
+        if let gtePrefixed = gtePrefixed {
+            rocksdb_iter_seek(iterator, gtePrefixed, strlen(gtePrefixed))
+        } else if let ltePrefixed = ltePrefixed {
+            rocksdb_iter_seek_for_prev(iterator, ltePrefixed, strlen(ltePrefixed))
+            reversed = true
+        } else if let prefix = prefix {
+            rocksdb_iter_seek(iterator, prefix, strlen(prefix))
+        } else {
+            rocksdb_iter_seek_to_first(iterator)
+        }
     }
 
     public func next() -> (key: K, value: V)? {
@@ -272,7 +305,11 @@ public class RocksDBIterator<K: RocksDBValueInitializable, V: RocksDBValueInitia
         if isFirstIteration {
             isFirstIteration = false
         } else {
-            rocksdb_iter_next(iterator)
+            if reversed {
+                rocksdb_iter_prev(iterator)
+            } else {
+                rocksdb_iter_next(iterator)
+            }
         }
 
         if rocksdb_iter_valid(iterator) == 0 {
