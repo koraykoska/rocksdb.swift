@@ -12,7 +12,7 @@ the upstream rocksdb library. Patch version varies.
   s.homepage         = 'https://github.com/Ybrin/rocksdb.swift'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Koray Koska' => 'koray@koska.at' }
-  s.source           = { :git => 'https://github.com/Ybrin/rocksdb.swift.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/Ybrin/rocksdb.swift.git', :tag => "v#{s.version.to_s}" }
 
   s.ios.deployment_target = '8.0'
   s.osx.deployment_target = '10.10'
