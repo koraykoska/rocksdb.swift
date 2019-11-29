@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'librocksdb'
-  s.version          = '6.4.8'
+  s.version          = '6.4.12'
   s.summary          = 'rocksdb bindings for Swift. Cocoapods and SPM support. Linux support.'
 
   s.description      = <<-DESC
@@ -27,7 +27,8 @@ the upstream rocksdb library. Patch version varies.
     'GCC_PREPROCESSOR_DEFINITIONS' => 'ROCKSDB_PLATFORM_POSIX=1 ROCKSDB_LIB_IO_POSIX=1 PORTABLE=1 OS_MACOSX=1 ROCKSDB_BUILD_GIT_SHA_ENV=\"e3169e3ea8762d2f34880742106858a23c8dc8b7\" ROCKSDB_BUILD_GIT_DATE_ENV="\"Mon Oct 21 12:07:58 2019 -0700\""',
     'HEADER_SEARCH_PATHS' => '"${PODS_ROOT}/librocksdb/Sources/librocksdb/upstream" "${PODS_ROOT}/librocksdb/Sources/librocksdb/upstream/include" "${PODS_ROOT}/librocksdb/Sources/librocksdb/upstream/util"',
     'WARNING_CFLAGS' => '-Wno-shorten-64-to-32 -Wno-comma -Wno-unreachable-code -Wno-conditional-uninitialized -Wno-deprecated-declarations',
-    'USE_HEADERMAP' => 'No'
+    'USE_HEADERMAP' => 'No',
+    'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES'
   }
 
   # s.header_dir = 'rocksdb'

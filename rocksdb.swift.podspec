@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'rocksdb.swift'
-  s.version          = '6.4.11'
+  s.version          = '6.4.12'
   s.summary          = 'rocksdb Wrapper for Swift. Cocoapods and SPM support. Linux support.'
 
   s.description      = <<-DESC
@@ -19,7 +19,7 @@ the upstream rocksdb library. Patch version varies.
   s.tvos.deployment_target = '9.0'
   s.watchos.deployment_target = '2.0'
 
-  s.dependency 'librocksdb', '~> 6.4.8'
+  s.dependency 'librocksdb', '~> 6.4.12'
 
   s.swift_versions = '5.1.2', '5.0', '5.1'
 
