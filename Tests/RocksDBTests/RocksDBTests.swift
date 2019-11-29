@@ -191,10 +191,37 @@ final class RocksDBTests: XCTestCase {
         try! FileManager.default.removeItem(at: rocksDB.path)
     }
 
+    func testBatchOperations() {
+        let prefixedPath = "/tmp/\(UUID().uuidString)"
+
+        let prefixedDB = try! RocksDB(path: URL(fileURLWithPath: prefixedPath), prefix: "correctprefix")
+
+        try! prefixedDB.put(key: "testText", value: "lolamkhaha")
+        try! prefixedDB.put(key: "testEmoji", value: "😂")
+        try! prefixedDB.put(key: "testTextEmoji", value: "emojitext 😂")
+        try! prefixedDB.put(key: "testMultipleEmoji", value: "😂😂😂")
+
+        try! prefixedDB.batch(operations: [
+            .delete(key: "testText"),
+            .put(key: "someThing", value: "someValue"),
+            .delete(key: "someThing"),
+            .put(key: "secondKey", value: "anotherValue"),
+            .put(key: "testText", value: "textTextValue")
+        ])
+
+        XCTAssertEqual(try! prefixedDB.get(type: String.self, key: "testEmoji"), "😂")
+        XCTAssertEqual(try! prefixedDB.get(type: String.self, key: "someThing"), "")
+        XCTAssertEqual(try! prefixedDB.get(type: String.self, key: "secondKey"), "anotherValue")
+        XCTAssertEqual(try! prefixedDB.get(type: String.self, key: "testText"), "textTextValue")
+
+        prefixedDB.closeDB()
+    }
+
     static var allTests = [
         ("testSimplePut", testSimplePut),
         ("testSimpleDelete", testSimpleDelete),
         ("testPrefixedPut", testPrefixedPut),
         ("testPrefixedDelete", testPrefixedDelete),
+        ("testBatchOperations", testBatchOperations),
     ]
 }

@@ -22,6 +22,8 @@ public final class RocksDB {
 
         case deleteFailed(message: String)
 
+        case batchFailed(message: String)
+
         case dataNotConvertible
     }
 
@@ -225,6 +227,34 @@ public final class RocksDB {
         lte: String
     ) -> RocksDBSequence<Key, Value> {
         return RocksDBSequence(iterator: RocksDBIterator(db: db, prefix: prefix, gte: nil, lte: lte))
+    }
+
+    /// Write the given Operations as a batch update to the database.
+    /// The operations will be executed in order as they appear in the given array.
+    ///
+    /// - parameter operations: The array of operations to execute in order as a batch.
+    ///
+    /// - throws: If the write operation fails (`Error.putFailed(message:)`)
+    public func batch<Value: RocksDBValueConvertible>(operations: [RocksDBBatchOperation<Value>]) throws {
+        let writeBatch = rocksdb_writebatch_create()
+
+        for operation in operations {
+            switch operation {
+            case .delete(let key):
+                let key = getPrefixedKey(from: key)
+                rocksdb_writebatch_delete(writeBatch, key, strlen(key))
+            case .put(let key, let value):
+                let key = getPrefixedKey(from: key)
+                let cValue = try [UInt8](value.makeData()).map { uint8Val in
+                    return Int8(bitPattern: uint8Val)
+                }
+                rocksdb_writebatch_put(writeBatch, key, strlen(key), cValue, cValue.count)
+            }
+        }
+
+        rocksdb_write(db, writeOptions, writeBatch, &errorPointer)
+
+        try throwIfError(err: &errorPointer, throwable: Error.batchFailed)
     }
 }
 
