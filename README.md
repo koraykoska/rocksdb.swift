@@ -1,5 +1,8 @@
 # :rocket: rocksdb.swift
 
+[![Build Status](https://travis-ci.com/Ybrin/rocksdb.swift.svg?branch=master)](https://travis-ci.com/Ybrin/rocksdb.swift)
+[![codecov](https://codecov.io/gh/Ybrin/rocksdb.swift/branch/master/graph/badge.svg)](https://codecov.io/gh/Ybrin/rocksdb.swift)
+
 This library provides Swift bindings for rocksdb as well as Swifty bindings.
 
 ## Compatibility
