@@ -1,0 +1,61 @@
+# references:
+# * http://www.objc.io/issue-6/travis-ci.html
+# * https://github.com/supermarin/xcpretty#usage
+
+# Run tests on Ubuntu and macOS
+os:
+  - linux
+  - osx
+# Ubuntu 14.04
+dist: trusty
+
+# Generic language as travis doesn't know anything about SPM and Linux
+language: generic
+sudo: required
+
+osx_image: xcode11.2
+xcode_sdk: iphonesimulator13.2
+# cache: cocoapods
+# podfile: Example/Podfile
+before_install:
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then instruments -s devices; fi
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then gem install cocoapods; fi # Since Travis is not always on latest version
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then pod repo update; fi
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then
+      echo "macOS build. swiftenv will not be installed.";
+    else
+      git clone https://github.com/kylef/swiftenv.git ~/.swiftenv;
+      export SWIFTENV_ROOT="$HOME/.swiftenv";
+      export PATH="$SWIFTENV_ROOT/bin:$PATH";
+      eval "$(swiftenv init -)";
+
+      swiftenv install $(cat .swift-version);
+    fi
+script:
+  # Output something every 10 minutes or Travis kills the job
+  - while sleep 60; do echo "=====[ $SECONDS seconds still running ]====="; done &
+  # Actual script
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then
+      pod lib lint --allow-warnings librocksdb.podspec;
+    fi
+  - swift build
+  - swift build -c release
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then
+      swift package generate-xcodeproj;
+
+      # Replace header search paths in xcodeproj until SPM fixes this... https://bugs.swift.org/browse/SR-11804
+      sed -i "" 's/\"upstream\",/\"\$(SRCROOT)\/Sources\/librocksdb\/upstream\",/g' RocksDB.xcodeproj/project.pbxproj;
+      sed -i "" 's/\"upstream\/include\",/\"\$(SRCROOT)\/Sources\/librocksdb\/upstream\/include\",/g' RocksDB.xcodeproj/project.pbxproj;
+      sed -i "" 's/\"upstream\/util\"/\"\$(SRCROOT)\/Sources\/librocksdb\/upstream\/util\"/g' RocksDB.xcodeproj/project.pbxproj;
+
+      # Run xcodebuild with coverage enabled
+      xcodebuild test -scheme RocksDB-Package -destination platform="macOS" -enableCodeCoverage YES -derivedDataPath .build/derivedData;
+    else
+      swift test;
+    fi
+  # Kill background echo job
+  - kill %1
+after_success:
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then
+      bash <(curl -s https://codecov.io/bash) -J '^RocksDB$' -D .build/derivedData;
+    fi
