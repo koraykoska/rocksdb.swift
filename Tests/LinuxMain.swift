@@ -1,7 +1,7 @@
 import XCTest
 
-import rocksdb_swiftTests
+import RocksDBTests
 
 var tests = [XCTestCaseEntry]()
-tests += rocksdb_swiftTests.allTests()
+tests += RocksDBTests.allTests()
 XCTMain(tests)
