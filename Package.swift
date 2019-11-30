@@ -297,8 +297,8 @@ let package = Package(
                 .define(osEnvRocks),
 
                 // patches
-                .define("ROCKSDB_BUILD_GIT_SHA_ENV", to: "\"rocksdb_build_git_sha:\(rocksDBHash)\""),
-                .define("ROCKSDB_BUILD_GIT_DATE_ENV", to: "\"rocksdb_build_git_date:\(rocksDBCommitDate)\"")
+                .define("ROCKSDB_BUILD_GIT_SHA_ENV", to: "\"\\\"rocksdb_build_git_sha:\(rocksDBHash)\\\"\""),
+                .define("ROCKSDB_BUILD_GIT_DATE_ENV", to: "\"\\\"rocksdb_build_git_date:\(rocksDBCommitDate)\\\"\"")
             ]),
         .target(
             name: "RocksDB",
