@@ -38,7 +38,7 @@ script:
   # Actual script
   - |
     if [ $TRAVIS_OS_NAME == "osx" ]; then
-      pod lib lint --allow-warnings librocksdb.podspec;
+      pod spec lint --allow-warnings librocksdb.podspec;
     fi
   - swift build
   - swift build -c release

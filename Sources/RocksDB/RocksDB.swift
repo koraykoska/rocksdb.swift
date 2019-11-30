@@ -56,7 +56,7 @@ public final class RocksDB {
         self.prefix = prefix
 
         self.dbOptions = rocksdb_options_create()
-        let cpus = sysconf(_SC_NPROCESSORS_ONLN)
+        let cpus = sysconf(Int32(_SC_NPROCESSORS_ONLN))
 
         // Optimize rocksdb
         rocksdb_options_increase_parallelism(dbOptions, Int32(cpus))
