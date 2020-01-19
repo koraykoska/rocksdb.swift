@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'librocksdb'
-  s.version          = '6.4.14'
+  s.version          = '6.4.15'
   s.summary          = 'rocksdb bindings for Swift. Cocoapods and SPM support. Linux support.'
 
   s.description      = <<-DESC
