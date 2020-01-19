@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'rocksdb.swift'
-  s.version          = '6.4.13'
+  s.version          = '6.4.14'
   s.summary          = 'rocksdb Wrapper for Swift. Cocoapods and SPM support. Linux support.'
 
   s.description      = <<-DESC
@@ -19,15 +19,15 @@ the upstream rocksdb library. Patch version varies.
   s.tvos.deployment_target = '9.0'
   s.watchos.deployment_target = '2.0'
 
-  s.dependency 'librocksdb', '~> 6.4.13'
+  s.dependency 'librocksdb', '~> 6.4.14'
 
-  s.swift_versions = '5.1.2', '5.0', '5.1'
+  s.swift_versions = '5.1.3', '5.1.2', '5.0', '5.1'
 
   s.module_name = 'RocksDB'
 
-  s.pod_target_xcconfig = {
-    'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES'
-  }
+  # s.pod_target_xcconfig = {
+  #   'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES'
+  # }
 
   s.source_files = 'Sources/RocksDB/**/*.swift'
 end
