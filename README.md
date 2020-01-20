@@ -48,6 +48,10 @@ After the installation you can import RocksDB in your .swift files.
 import Web3
 ```
 
+## Usage
+
+For now, check out the tests for examples on how to use this wrapper. Contributions to add more examples are happily welcome.
+
 ## Versioning
 
 Major and Minor Version numbers are kept in sync with the upstream rocksdb library. Patch version varies.
